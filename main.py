@@ -1,5 +1,6 @@
 import streamlit as st
 import requests
+import time
 
 # --- CONFIGURATION ---
 API_BASE_URL = "https://health-care-agent-wyre.onrender.com"
@@ -33,7 +34,7 @@ with st.form("health_form"):
     )
     submitted = st.form_submit_button("Generate Plan")
 
-# --- API CALLS ---
+# --- API CALL FUNCTION ---
 def call_api(endpoint, payload):
     try:
         response = requests.post(f"{API_BASE_URL}/{endpoint}", json=payload)
@@ -58,26 +59,33 @@ if submitted:
         "fitness_goal": fitness_goal,
     }
 
-    st.info("⏳ Generating personalized health recommendations...")
+    st.info("Please select what you'd like to generate 👇")
 
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns(3)
 
     with col1:
-        if st.button("🍽️ Get Meal Plan"):
-            result = call_api("meal-plan", payload)
+        if st.button("🍽️ Meal Plan"):
+            with st.spinner("Generating your personalized Meal Plan... ⏳"):
+                time.sleep(1)
+                result = call_api("meal-plan", payload)
             if result:
-                st.success("Meal Plan Generated Successfully!")
+                st.success("✅ Meal Plan Generated Successfully!")
                 st.markdown(result["meal_plan"])
 
     with col2:
-        if st.button("🏋️ Get Fitness Plan"):
-            result = call_api("fitness-plan", payload)
+        if st.button("🏋️ Fitness Plan"):
+            with st.spinner("Creating your Fitness Routine... 🏃‍♀️"):
+                time.sleep(1)
+                result = call_api("fitness-plan", payload)
             if result:
-                st.success("Fitness Plan Generated Successfully!")
+                st.success("✅ Fitness Plan Generated Successfully!")
                 st.markdown(result["fitness_plan"])
 
-    if st.button("🧠 Get Full Health Plan"):
-        result = call_api("full-health-plan", payload)
-        if result:
-            st.success("Full Health Plan Generated Successfully!")
-            st.markdown(result["full_health_plan"])
+    with col3:
+        if st.button("🧠 Full Health Plan"):
+            with st.spinner("Combining diet & fitness insights... 🤖"):
+                time.sleep(1)
+                result = call_api("full-health-plan", payload)
+            if result:
+                st.success("✅ Full Health Plan Generated Successfully!")
+                st.markdown(result["full_health_plan"])
